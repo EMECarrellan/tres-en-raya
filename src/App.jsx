@@ -103,11 +103,15 @@ function App() {
             <Square isSelected={turn === TURNS.X}>
                 {TURNS.X}
             </Square>
-                <h3>{score.x}</h3>
             <Square isSelected={turn === TURNS.O}>
                 {TURNS.O}
             </Square>
-                <h3>{score.y}</h3>
+        </section>
+
+        <section className='score'>
+          <h3>{score.x}</h3>
+          <span>-</span>
+          <h3>{score.y}</h3>
         </section>
 
         <WinnerModal winner={winner} resetGame={resetGame}/>
