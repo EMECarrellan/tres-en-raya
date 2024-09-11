@@ -22,26 +22,33 @@ function App() {
 
   const [score, setScore] = useState(() => {
     const scoreFromStorage = window.localStorage.getItem('score')
-    return scoreFromStorage ? JSON.parse(scoreFromStorage) : { x: 0, y: 0 }
+    return scoreFromStorage
+      ? JSON.parse(scoreFromStorage)
+      : { x: 0, y: 0 }
   })
 
   const [winner, setWinner] = useState(null)
+  const [gameOver, setGameOver] = useState(() => {
+    const gameOverFromStorage = window.localStorage.getItem('gameOver')
+    return gameOverFromStorage ?? false
+  })
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
     // El ganador cede el turno al perdedor
     setTurn(winner === TURNS.X ? TURNS.O : TURNS.X)
     setWinner(null)
+    setGameOver(false)
     
+    window.localStorage.removeItem('gameOver')
     window.localStorage.removeItem('board')
-    window.localStorage.removeItem('turn')
   }
 
   const resetScore = () => {
     setBoard(Array(9).fill(null))
     setScore({x: 0, y: 0})
     
-    
+    window.localStorage.removeItem('gameOver')
     window.localStorage.removeItem('board')
     window.localStorage.removeItem('turn')
     window.localStorage.removeItem('score')
@@ -49,8 +56,8 @@ function App() {
 
     const updateBoard = (index) => {
 
-    // No actualizar la posición si contiene algo
-    if(board[index] || winner) return
+    // No actualizar la posición si contiene algo o se acaba el juego
+    if(board[index] || winner || gameOver) return
     // Actualizar el tablero
     const newBoard = [...board]
     newBoard[index] = turn
@@ -60,13 +67,15 @@ function App() {
     if (newWinner) {
         confetti()
         setWinner(newWinner)
-        
+        setGameOver(true)
+
         const newScore = {
           x: score.x + (newWinner === TURNS.X ? 1 : 0),
           y: score.y + (newWinner === TURNS.O ? 1 : 0)
         }
         setScore(newScore)
 
+        window.localStorage.setItem('gameOver', true)
         window.localStorage.setItem('score', JSON.stringify(newScore))
     } else if (checkEndGame(newBoard)) {
         setWinner(false)
@@ -82,7 +91,8 @@ function App() {
   return (
     <main className='board'>
         <h1>Tres en Raya</h1>
-        <button onClick={resetScore}>Reset score</button>
+        <button onClick={resetGame}>Reset game</button>
+        <button onClick={resetScore}>Reset all</button>
         <section className='game'>
             {
                 board.map((square, index) => {
