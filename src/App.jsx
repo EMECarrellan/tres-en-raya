@@ -32,15 +32,15 @@ function App() {
     // El ganador cede el turno al perdedor
     setTurn(winner === TURNS.X ? TURNS.O : TURNS.X)
     setWinner(null)
-    // setScore({x: 0, y: 0})
     
     window.localStorage.removeItem('board')
     window.localStorage.removeItem('turn')
-    // window.localStorage.removeItem('score')
   }
 
   const resetScore = () => {
+    setBoard(Array(9).fill(null))
     setScore({x: 0, y: 0})
+    
     
     window.localStorage.removeItem('board')
     window.localStorage.removeItem('turn')

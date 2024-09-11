@@ -139,8 +139,4 @@
     margin: 0 90px;
     font-size: 40px;
     gap: 12px;
-
-    &span {
-      font-size: xx-large;
-    }
   }
