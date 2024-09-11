@@ -20,16 +20,31 @@ function App() {
     return turnFromStorage ?? initialTurn[Math.floor(Math.random() * 2)]
 })
 
+  const [score, setScore] = useState(() => {
+    const scoreFromStorage = window.localStorage.getItem('score')
+    return scoreFromStorage ? JSON.parse(scoreFromStorage) : { x: 0, y: 0 }
+  })
+
   const [winner, setWinner] = useState(null)
 
-  const resetGame = () =>{
+  const resetGame = () => {
     setBoard(Array(9).fill(null))
     // El ganador cede el turno al perdedor
     setTurn(winner === TURNS.X ? TURNS.O : TURNS.X)
     setWinner(null)
-
+    // setScore({x: 0, y: 0})
+    
     window.localStorage.removeItem('board')
     window.localStorage.removeItem('turn')
+    // window.localStorage.removeItem('score')
+  }
+
+  const resetScore = () => {
+    setScore({x: 0, y: 0})
+    
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turn')
+    window.localStorage.removeItem('score')
   }
 
     const updateBoard = (index) => {
@@ -45,6 +60,14 @@ function App() {
     if (newWinner) {
         confetti()
         setWinner(newWinner)
+        
+        const newScore = {
+          x: score.x + (newWinner === TURNS.X ? 1 : 0),
+          y: score.y + (newWinner === TURNS.O ? 1 : 0)
+        }
+        setScore(newScore)
+
+        window.localStorage.setItem('score', JSON.stringify(newScore))
     } else if (checkEndGame(newBoard)) {
         setWinner(false)
     }
@@ -59,7 +82,7 @@ function App() {
   return (
     <main className='board'>
         <h1>Tres en Raya</h1>
-        <button onClick={resetGame}>Reset</button>
+        <button onClick={resetScore}>Reset score</button>
         <section className='game'>
             {
                 board.map((square, index) => {
@@ -80,9 +103,11 @@ function App() {
             <Square isSelected={turn === TURNS.X}>
                 {TURNS.X}
             </Square>
+                <h3>{score.x}</h3>
             <Square isSelected={turn === TURNS.O}>
                 {TURNS.O}
             </Square>
+                <h3>{score.y}</h3>
         </section>
 
         <WinnerModal winner={winner} resetGame={resetGame}/>
